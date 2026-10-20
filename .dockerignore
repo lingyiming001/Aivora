@@ -1,0 +1,13 @@
+.git
+.m2
+**/target
+**/node_modules
+**/dist
+.env
+*.log
+*.tsbuildinfo
+
+**/.env
+**/.env.*
+.agents
+.local-test-credentials

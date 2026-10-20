@@ -56,6 +56,7 @@ export function Layout({ admin = false }: { admin?: boolean }) {
     : ([
         ['/', '发现角色', Compass],
         ['/chats', '我的对话', MessageCircle],
+        ['/live', '直播与开放能力', Network],
         ['/favorites', '我的收藏', UserRound],
         ['/my-characters', '我的角色', UserRound],
         ['/wallet', '星币钱包', WalletIcon],

@@ -1,0 +1,33 @@
+server:
+  port: 8080
+spring:
+  datasource:
+    url: ${DATABASE_URL:jdbc:postgresql://localhost:5432/aivora}
+    username: ${DATABASE_USER:aivora}
+    password: ${DATABASE_PASSWORD:aivora_dev}
+  data:
+    redis:
+      host: ${REDIS_HOST:localhost}
+      port: ${REDIS_PORT:6379}
+  flyway:
+    enabled: true
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,prometheus
+  endpoint:
+    health:
+      probes:
+        enabled: true
+aivora:
+  jwt-secret: ${JWT_SECRET}
+  provider-key: ${PROVIDER_ENCRYPTION_KEY:}
+  bootstrap-admin-email: ${BOOTSTRAP_ADMIN_EMAIL:}
+  cors-origin: ${CORS_ORIGIN:http://localhost:5173}
+  guest-stars: ${AIVORA_GUEST_STARS:10}
+
+  live:
+    media-enabled: ${AIVORA_MEDIA_ENABLED:false}
+    rtmp-public-url: ${AIVORA_RTMP_PUBLIC_URL:rtmp://localhost:1935/live}
+    hls-internal-url: ${AIVORA_HLS_INTERNAL_URL:http://127.0.0.1:18085}

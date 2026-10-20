@@ -1,0 +1,66 @@
+services:
+  postgres:
+    image: postgres:16
+    pull_policy: never
+    ports: ['127.0.0.1:${POSTGRES_PORT:-15432}:5432']
+    environment:
+      POSTGRES_DB: aivora
+      POSTGRES_USER: aivora
+      POSTGRES_PASSWORD: ${DATABASE_PASSWORD:-aivora_dev}
+    volumes: [pgdata:/var/lib/postgresql/data]
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U aivora']
+      interval: 5s
+      retries: 10
+  redis:
+    image: redis:7-alpine
+    pull_policy: never
+    ports: ['127.0.0.1:${REDIS_PORT:-16379}:6379']
+    command: ['redis-server', '--appendonly', 'yes']
+    volumes: [redisdata:/data]
+  minio:
+    image: minio/minio:latest
+    pull_policy: never
+    ports:
+      - '127.0.0.1:${MINIO_PORT:-19000}:9000'
+      - '127.0.0.1:${MINIO_CONSOLE_PORT:-19001}:9001'
+    command: server /data --console-address :9001
+    environment:
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER:-minioadmin}
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD:-minioadmin123}
+    volumes: [miniodata:/data]
+  backend:
+    profiles: [container-app]
+    build:
+      context: ..
+      dockerfile: deploy/backend.Dockerfile
+    environment:
+      DATABASE_URL: jdbc:postgresql://postgres:5432/aivora
+      DATABASE_USER: aivora
+      DATABASE_PASSWORD: ${DATABASE_PASSWORD:-aivora_dev}
+      REDIS_HOST: redis
+      JWT_SECRET: ${JWT_SECRET:?set JWT_SECRET in .env}
+      PROVIDER_ENCRYPTION_KEY: ${PROVIDER_ENCRYPTION_KEY:-}
+      AIVORA_MEDIA_ENABLED: ${AIVORA_MEDIA_ENABLED:-false}
+      AIVORA_RTMP_PUBLIC_URL: ${AIVORA_RTMP_PUBLIC_URL:-rtmp://localhost:1935/live}
+      AIVORA_HLS_INTERNAL_URL: ${AIVORA_HLS_INTERNAL_URL:-http://media:8080}
+      CORS_ORIGIN: ${CORS_ORIGIN:-http://localhost:5173}
+      BOOTSTRAP_ADMIN_EMAIL: ${BOOTSTRAP_ADMIN_EMAIL:-}
+      SPRING_PROFILES_ACTIVE: ${SPRING_PROFILES_ACTIVE:-}
+    ports: ['8080:8080']
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_started
+  frontend:
+    profiles: [container-app]
+    build:
+      context: ..
+      dockerfile: deploy/frontend.Dockerfile
+    ports: ['13000:80']
+    depends_on: [backend]
+volumes:
+  pgdata:
+  redisdata:
+  miniodata:

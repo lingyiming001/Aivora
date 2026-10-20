@@ -1,0 +1,11 @@
+update character_card set avatar_url='/images/character-1.jpg' where id=1 and name='林澈' and (avatar_url is null or avatar_url='');
+update character_card set avatar_url='/images/character-2.jpg' where id=2 and name='Mira' and (avatar_url is null or avatar_url='');
+update character_card set avatar_url='/images/character-3.jpg' where id=3 and name='小满' and (avatar_url is null or avatar_url='');
+update character_card set avatar_url='/images/character-4.jpg' where id=4 and name='陈屿' and (avatar_url is null or avatar_url='');
+update character_card set avatar_url='/images/character-5.jpg' where id=5 and name='Luna' and (avatar_url is null or avatar_url='');
+update character_card set avatar_url='/images/character-6.jpg' where id=6 and name='周言' and (avatar_url is null or avatar_url='');
+update character_card set avatar_url='/images/character-7.jpg' where id=7 and name='Ada' and (avatar_url is null or avatar_url='');
+update character_card set avatar_url='/images/character-8.jpg' where id=8 and name='Alex' and (avatar_url is null or avatar_url='');
+update character_card set avatar_url='/images/character-9.jpg' where id=9 and name='夜航' and (avatar_url is null or avatar_url='');
+update character_card set avatar_url='/images/character-10.jpg' where id=10 and name='青禾' and (avatar_url is null or avatar_url='');
+update character_card set avatar_url='/images/character-11.jpg' where id=11 and name='故事实验室' and (avatar_url is null or avatar_url='');

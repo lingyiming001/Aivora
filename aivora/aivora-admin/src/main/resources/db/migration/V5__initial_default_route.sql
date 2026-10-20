@@ -1,0 +1,1 @@
+UPDATE ai_model SET is_default=true WHERE id=(SELECT m.id FROM ai_model m JOIN ai_provider p ON p.id=m.provider_id WHERE m.enabled AND p.enabled ORDER BY m.id LIMIT 1) AND NOT EXISTS(SELECT 1 FROM ai_model WHERE is_default);

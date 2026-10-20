@@ -1,3 +1,6 @@
+import LiveWorkspace from '@/pages/live';
+import LiveWatch from '@/pages/live/Watch';
+import LiveOverlay from '@/pages/live/Overlay';
 import ConfiguredMenuPage from '@/pages/system/permissions/ConfiguredMenuPage';
 import AdminAccount from '@/pages/system/account';
 import { Navigate, Route, Routes } from 'react-router-dom';
@@ -27,6 +30,8 @@ export function AppRoutes() {
   return (
     <>
       <Routes>
+        <Route path="/live/watch/:stream" element={<LiveWatch />} />
+        <Route path="/live/overlay" element={<LiveOverlay />} />
         <Route element={<Layout />}>
           <Route path="/" element={<Square />} />
           <Route path="/characters/:id" element={<Detail />} />
@@ -43,6 +48,14 @@ export function AppRoutes() {
             element={
               <Protected>
                 <CharacterEditor />
+              </Protected>
+            }
+          />
+          <Route
+            path="/live"
+            element={
+              <Protected>
+                <LiveWorkspace />
               </Protected>
             }
           />

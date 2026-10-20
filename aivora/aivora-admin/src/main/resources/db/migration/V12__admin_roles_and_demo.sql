@@ -1,0 +1,10 @@
+create table admin_role(id bigserial primary key,code varchar(64) not null unique,name varchar(80) not null,description varchar(300) not null default '',enabled boolean not null default true);
+create table admin_role_permission(role_id bigint not null references admin_role(id) on delete cascade,menu_key varchar(40) not null,primary key(role_id,menu_key));
+create table admin_user_role(user_id bigint not null references app_user(id),role_id bigint not null references admin_role(id),primary key(user_id,role_id));
+insert into admin_role(code,name,description) values ('CONTENT_REVIEWER','内容审核员','审核角色卡投稿与维护角色价格'),('OPERATIONS','运营人员','用户与角色卡日常运营');
+insert into admin_role_permission select id,'review' from admin_role where code in ('CONTENT_REVIEWER','OPERATIONS');
+insert into admin_role_permission select id,'users' from admin_role where code='OPERATIONS';
+insert into admin_role(code,name) select 'LEGACY_'||u.id,'历史授权-'||u.id from app_user u where u.role='ADMIN' and not u.admin_super;
+insert into admin_user_role select u.id,r.id from app_user u join admin_role r on r.code='LEGACY_'||u.id;
+insert into admin_role_permission select r.id,p.menu_key from admin_menu_permission p join admin_role r on r.code='LEGACY_'||p.user_id;
+update ai_provider set kind='LOCAL_DEMO' where name='Aivora 本地演示' and base_url='http://127.0.0.1:19080/v1';

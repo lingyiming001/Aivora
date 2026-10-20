@@ -1,0 +1,13 @@
+# Optional media service for the native backend on port 8080.
+services:
+  media:
+    image: ossrs/srs:6
+    command: ['./objs/srs', '-c', '/usr/local/srs/conf/aivora.conf']
+    ports:
+      - '127.0.0.1:${AIVORA_RTMP_PORT:-1935}:1935'
+      - '127.0.0.1:${AIVORA_HLS_PORT:-18085}:8080'
+    extra_hosts:
+      - 'host.docker.internal:host-gateway'
+    volumes:
+      - './srs.conf:/usr/local/srs/conf/aivora.conf:ro'
+    restart: unless-stopped

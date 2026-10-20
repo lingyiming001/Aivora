@@ -1,0 +1,12 @@
+ALTER TABLE app_user ADD COLUMN membership_tier VARCHAR(20) NOT NULL DEFAULT 'STANDARD' CHECK(membership_tier IN ('STANDARD','VIP','SVIP'));
+ALTER TABLE character_card ADD COLUMN stars_per_message BIGINT NOT NULL DEFAULT 1 CHECK(stars_per_message BETWEEN 1 AND 1000);
+ALTER TABLE character_card ADD COLUMN visibility VARCHAR(10) NOT NULL DEFAULT 'PUBLIC' CHECK(visibility IN ('PUBLIC','PRIVATE'));
+ALTER TABLE character_card ADD COLUMN tags VARCHAR(200) NOT NULL DEFAULT '';
+ALTER TABLE character_card ADD COLUMN deleted_at TIMESTAMPTZ;
+ALTER TABLE chat_session ADD COLUMN updated_at TIMESTAMPTZ NOT NULL DEFAULT now();
+ALTER TABLE chat_session ADD COLUMN history_after_id BIGINT NOT NULL DEFAULT 0;
+ALTER TABLE chat_request ADD COLUMN model_id BIGINT REFERENCES ai_model(id);
+ALTER TABLE chat_request ADD COLUMN user_tier VARCHAR(20);
+CREATE TABLE model_route_rule(id BIGSERIAL PRIMARY KEY,name VARCHAR(80) NOT NULL,user_tier VARCHAR(20) NOT NULL CHECK(user_tier IN ('GUEST','STANDARD','VIP','SVIP')),min_stars INTEGER NOT NULL CHECK(min_stars>=1),max_stars INTEGER CHECK(max_stars>=min_stars),model_id BIGINT NOT NULL REFERENCES ai_model(id),priority INTEGER NOT NULL DEFAULT 0 CHECK(priority>=0),enabled BOOLEAN NOT NULL DEFAULT true);
+UPDATE character_card SET stars_per_message=CASE WHEN category='幻想世界' THEN 5 WHEN category IN ('工作效率','创意写作') THEN 3 ELSE 1 END WHERE seed_key IS NOT NULL;
+INSERT INTO model_route_rule(name,user_tier,min_stars,max_stars,model_id) SELECT t.name||' · '||p.name,t.tier,p.min,p.max,m.id FROM (VALUES('GUEST','游客'),('STANDARD','普通'),('VIP','VIP'),('SVIP','SVIP')) t(tier,name) CROSS JOIN (VALUES(1,2,'基础角色'),(3,4,'进阶角色'),(5,NULL::INTEGER,'高阶角色')) p(min,max,name) CROSS JOIN ai_model m JOIN ai_provider a ON a.id=m.provider_id WHERE m.is_default AND m.enabled AND a.enabled;
